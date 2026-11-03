@@ -80,9 +80,10 @@ A personal bodybuilding-prep tracker for GG's contest-style cut, built to be sho
 
 ### 3.5 3D model
 - Source: **Z-Anatomy** (Blender, CC BY-SA 4.0; male; anatomical position ≈ A-pose; every muscle a separate object; far too heavy for a phone). GG has Blender and Z-Anatomy on his personal PC. The Blender work (decimate, group, export `.glb`) happens there, via a script Claude writes or through GG's Blender connector in Claude Desktop.
-- **Look:** a **HOLO / SOLID** toggle. Muscles only — **no skin** `[guess: no skeleton either — confirm with GG before slice 7]`.
+- **Look:** a **HOLO / SOLID** toggle. Muscles only — **no skin, no skeleton** (GG, 2026-11-03).
 - **Morphing approach (decided): runtime inflation** — each muscle object is pushed outward/inward along its surface normals by its driver. Honest limits: neighbors may poke through at extremes; it reads as a HUD model, not a photo. Hand-sculpted shape keys may follow later for the 6–8 muscles GG cares most about.
-- **Mapping:** each tape site drives a set of muscles (e.g. bicep → biceps + brachialis; quad → the four quads; calf → gastrocnemius + soleus). **Propose the full site→muscle table to GG for approval before scripting.** Calibration: at GG's Oct 26 baseline the model is as-modeled; each inch up or down moves the region a fixed amount (linear).
+- **Mapping:** each tape site drives a set of muscles. **Site→muscle table approved by GG 2026-11-03:** Shoulders → the three deltoid heads (+ a touch of upper trapezius) · Chest → pectoralis major and minor, lats, teres major, serratus, mid trapezius, rhomboids, thoracic erectors · Waist → rectus abdominis, obliques, lumbar erectors, quadratus lumborum · Hips → gluteus maximus/medius/minimus, tensor fasciae latae · Neck → sternocleidomastoid, scalenes, splenius, upper trapezius, levator scapulae · Bicep L/R → biceps brachii, brachialis, coracobrachialis · Triceps L/R → the three triceps heads, anconeus · Forearm L/R → brachioradialis and every forearm flexor/extensor · Quad L/R → the four quads at full strength, hamstrings and adductors at half · Calf L/R → gastrocnemius and soleus, tibialis anterior and peroneals at half · Leg length L/R and wingspan → stretch the limb groups along their length · Pec height, wrist, ankle → wait for hand-sculpted shape keys. The 20 MUSCLE groups map to their obvious Z-Anatomy muscles (traps → trapezius, lats → latissimus + teres major, upper back → rhomboids, infraspinatus, teres minor, lower back → erectors + quadratus lumborum, serratus → serratus anterior, and so on). Calibration: at GG's Oct 26 baseline the model is as-modeled; each inch of girth moves the region outward/inward along its surface by the matching radius change (≈ 0.16 in per inch of girth), 1:1, **no cap** (GG, 2026-11-03); MUSCLE 0–100 adds ±12% at the ends.
+- **Export pipeline (decided 2026-11-03, Route A):** GG runs `tools/blender-export.py` in Blender on his PC (steps in `tools/BLENDER-STEPS.md`). It picks every mesh under a muscle collection plus anything named like a muscle, smooth-shades them, decimates to ~150,000 triangles in total (floor 60 per muscle), and writes `body.glb` (separate meshes, original names kept, Y-up, no materials), `body-manifest.json` (per mesh: name, collection, triangles before/after, centroid, bounds; global bounds and height), `names.txt` (every object in the file) and `report.txt`. GG uploads the four files to `assets/` via the GitHub website. Muscle grouping lives in the app (a mapping file Claude maintains), so a mapping fix never needs another Blender run. The app will read the GLB with its own small parser (no vendored GLTFLoader), merge the muscles into one geometry with a per-vertex region id, and inflate along the stored normals; the app scales the model to GG's height.
 - **Poses:** A-pose first; T-pose later (needs a rig or a second posed export). **Spin:** auto-rotate toggle + drag to rotate.
 - Until the real model exists, the placeholder mannequin stays: every girth becomes a radius (circumference ÷ 2π), so it is measurement-true.
 
@@ -143,7 +144,7 @@ Slice 2 note: the USDA site was not reachable from the build session, so the pre
 
 ## 5. Build order
 
-Each slice is a branch (`slice-N-name`, or the `claude/…` name Claude Code assigns), merged only when the menu and Body still work. Slices 1 and 2 are done.
+Each slice is a branch (`slice-N-name`, or the `claude/…` name Claude Code assigns), merged only when the menu and Body still work. Slices 1 and 2 are done. Slice 7 was started 2026-11-03 at GG's request, ahead of 3–6, on the same branch as slice 2 (this session is pinned to one branch).
 
 1. **Shell (done):** menu, countdown, date, analog clock, 7-card drum, under-construction cards, Body HUD with placeholder mannequin, HOLO/SOLID, RELAXED/FLEXED, SAVE → versions (browser storage for now), Nutrients frame.
 2. **Nutrients (done 2026-11-03):** bars, targets, catalog with preloaded foods, add/edit food (barcode number typed), daily log with date picker, water and caffeine quick-adds, red rule, day rollover. IndexedDB layer built here; slice 1's browser-storage keys migrated into it. Files moved to the repo root and split into `css/` + `js/`.
@@ -151,7 +152,7 @@ Each slice is a branch (`slice-N-name`, or the `claude/…` name Claude Code ass
 4. **Body data:** measurements, weights (7-day average), scans, photos in IndexedDB; HISTORY shows a version on the model; BMI/BMR from stored data.
 5. **Install:** `manifest.webmanifest` (standalone, landscape, icons), service worker caching every asset, in-app "Add to Home screen" hint, About line with licenses.
 6. **Backup / restore + Claude report** (§3.7, §3.8).
-7. **3D model:** Blender script for GG's PC → `/assets/body.glb` (target ≤ ~15 MB) → loader replaces the mannequin → inflation drivers from TAPE + MUSCLE → HOLO/SOLID materials → attribution. Site→muscle table approved by GG first.
+7. **3D model (in progress since 2026-11-03):** Blender script for GG's PC (done: `tools/blender-export.py`, tested on a stand-in scene) → GG runs it and uploads `/assets/body.glb` (target ≤ ~15 MB) → loader replaces the mannequin → inflation drivers from TAPE + MUSCLE → HOLO/SOLID materials → attribution. Site→muscle table approved (§3.5).
 8. **Pro review:** LOAD SAMPLE DATA, empty states, polish, first-run hints.
 Later, when GG specs them: Goals, Workouts, Progress, Misc., Settings.
 
@@ -174,6 +175,8 @@ The app lives at the repo root (moved out of `steel-prep-starter-kit/` in slice 
 - `js/data/foods-preload.js` — the 8 USDA foods (approx, see §4.4) and the two caffeine sources; seeded once (`meta.seeded`).
 - `vendor/three.module.min.js` — three.js 0.160 (MIT).
 - `fonts/` — Rajdhani 500/600/700 woff2 (OFL) + license texts (DSEG license text too).
+- `tools/blender-export.py` — the slice-7 Blender script GG runs on his PC (see §3.5 export pipeline); verified in the cloud with Blender-as-Python (bpy 5.2) on a stand-in scene: bones excluded, hidden muscles found, 150K-triangle trim, 2.7 MB GLB that parses. `tools/BLENDER-STEPS.md` — click-by-click steps for GG.
+- `assets/LICENSE-Z-Anatomy.md` — CC BY-SA 4.0 notice for the derived model; `assets/body.glb`, `body-manifest.json`, `names.txt`, `report.txt` arrive from GG's Blender run.
 - `README.md` — how to open and deploy.
 - Reference docs (GG's, in Claude): "Tracker app handoff" and "Bodybuilding prep research". Ask GG to paste a section when needed; do not assume their contents beyond §4.
 
@@ -194,9 +197,10 @@ The app lives at the repo root (moved out of `steel-prep-starter-kit/` in slice 
 - 2026-10-30 — Spec locked as in §3 after a 37-question review with GG. Build moved from chat to Claude Code (cloud) with this repo; Blender work stays on GG's personal PC.
 - 2026-10-30 — Somatotype/"Build" removed ("outdated"). Digital clock removed; analog red clock added. MISC. and SETTINGS cards added (under construction).
 - 2026-11-03 — Slice 2 built on GG's "go" with the proposed defaults: app files moved from `steel-prep-starter-kit/` to the repo root; `index.html` split into `css/` + `js/` modules; Nutrients layout = bars left, day log right; food form takes label values per serving or per 100 g; magnesium / niacin / folate ULs count supplements only; vitamin D in µg; §4.5 data model confirmed with per-key settings records and a `day` field on log rows. The USDA site was unreachable from the build session, so preloaded values were typed from memory and marked "approx — check". Branch `claude/fervent-clarke-1kv553` is Claude Code's name for slice-2-nutrients.
+- 2026-11-03 — GG asked for the Z-Anatomy model next (slice 7 ahead of 3–6) and chose Route A: he runs Claude's Blender script on his PC and uploads the result; the cloud session cannot see his computer. Approved: muscles only (no skeleton), ~150K triangles, the site→muscle table in §3.5, inflation 1:1 with **no cap**, A-pose first. The USDA-style "cloud does it all" route was dropped because other GitHub repos and the Z-Anatomy site are unreachable from the sandbox.
 
 ## 9. Open questions to raise with GG when they become relevant
-- Skeleton under the muscles in the 3D model, or muscles alone? `[guess: muscles alone]`
+- Which Z-Anatomy file GG downloaded (`.blend`, or a `.glb`/`.fbx`/`.obj` export) and whether his PC is Windows or Mac (a Mac could link its folder to a cloud session). `report.txt` from the Blender run will say which Blender version he has.
 - Preloaded USDA numbers: GG to spot-check against fdc.nal.usda.gov (the id is in each food's source line) and fix in the EDIT form; confirm the shoulder steak and salmon cuts used (§4.4). Raw chicken entry: not added unless GG asks.
 - GitHub Pages: confirm it serves `main` from the repo root, so the link is `https://darkmuffinman.github.io/Steel-Prep/`. A slice branch only reaches the phone once merged into main (or Pages is pointed at the branch).
 - Contents of Goals, Workouts, Progress, Misc., Settings.
