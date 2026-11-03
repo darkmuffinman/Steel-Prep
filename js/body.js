@@ -166,7 +166,7 @@ const solidReal=new THREE.MeshStandardMaterial({color:0xb01220,roughness:0.55,me
 async function loadModel(){
   const info=$('#modelInfo');
   try{
-    const glb=await loadGLB('assets/body.glb');
+    const glb=await loadGLB(window.STEELPREP_MODEL||'assets/body.glb');   // a host that cannot serve .glb (the claude.ai preview) names another path
     const want=new Map(MUSCLES.map(m=>[m.n,m]));
     const segs=[];let nV=0,nI=0;
     for(const mesh of glb.meshes){const m=want.get(mesh.name);if(!m)continue;for(const p of mesh.primitives){segs.push({m,mesh,p});nV+=p.pos.length/3;nI+=p.idx.length;}}
