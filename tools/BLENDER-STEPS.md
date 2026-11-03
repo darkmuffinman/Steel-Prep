@@ -15,6 +15,15 @@ Nothing to install: Blender is already on your PC. The script does not change yo
 5. Wait. Blender may say "Not Responding"; leave it alone. Ten minutes to an hour is normal for the full Z-Anatomy file. To watch the log: **Window → Toggle System Console**.
 6. When it finishes, close Blender and choose **Don't Save**.
 
+### If Blender 5.2 crashes while opening the Z-Anatomy file
+Z-Anatomy's insertion patches carry Subdivision Surface modifiers that crash Blender 5.2. The script sidesteps this when it opens the file itself: either put the path of `Startup.blend` in `BLEND_FILE` near the top of the script and run it from an empty Blender, or run it from a terminal with no window at all (note the `--`):
+
+```
+blender.exe -b -P blender-export.py -- "C:\path\to\Startup.blend"
+```
+
+A separate Blender 5.2 bug still ends about one run in three within seconds; just run it again. A good run ends with `DONE.` in `report.txt`.
+
 ## 3. What it writes
 Next to the `.blend` file (or on your Desktop if the file was never saved):
 - `body.glb` — the muscles, trimmed to about 150,000 triangles, a few MB
