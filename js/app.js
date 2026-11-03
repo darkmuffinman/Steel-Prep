@@ -11,13 +11,16 @@
      data/         nutrient definitions and the preloaded foods
    ========================================================= */
 import {db} from './db.js';
-import {wireScreens,toast} from './ui.js';
+import {wireScreens,toast,esc} from './ui.js';
 import {initMenu} from './menu.js';
 import {initBody} from './body.js';
 import {initNutrients} from './nutrients.js';
 
 await db.open();                                   // "await": wait for the database before any screen reads it
 wireScreens();
+/* anything that breaks later shows up on screen, so GG never needs the browser console */
+window.addEventListener('error',e=>toast(`ERROR · ${esc(e.message||'unknown')}`,9000));
+window.addEventListener('unhandledrejection',e=>toast(`ERROR · ${esc(e.reason?.message||String(e.reason))}`,9000));
 const start=async(name,fn)=>{try{await fn();}catch(e){console.error(name+' failed to start',e);toast(`<i>${name.toUpperCase()}</i> FAILED TO START · SEE CONSOLE`);}};
 await start('menu',initMenu);
 await start('body',initBody);

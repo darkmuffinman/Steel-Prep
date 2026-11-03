@@ -1,5 +1,5 @@
 import * as THREE from '../vendor/three.module.min.js';   // three.js 0.160 (MIT), shipped in /vendor
-import {$,toast,stampNow,onOpen} from './ui.js';
+import {$,toast,esc,stampNow,onOpen} from './ui.js';
 import {store} from './db.js';
 import {loadGLB} from './glb.js';
 import {MUSCLES} from './data/muscle-map.js';
@@ -166,7 +166,8 @@ const solidReal=new THREE.MeshStandardMaterial({color:0xb01220,roughness:0.55,me
 async function loadModel(){
   const info=$('#modelInfo');
   try{
-    const glb=await loadGLB(window.STEELPREP_MODEL||'assets/body.glb');   // a host that cannot serve .glb (the claude.ai preview) names another path
+    const glb=await loadGLB(window.STEELPREP_MODEL||'assets/body.glb',(got,total)=>{   // a host that cannot serve .glb (the claude.ai preview) names another path
+      info.innerHTML=`MODEL · <b>LOADING ${total?Math.round(got/total*100)+'%':(got/1e6).toFixed(1)+' MB'}</b><br>Z-ANATOMY · <i>CC BY-SA 4.0</i>`;});
     const want=new Map(MUSCLES.map(m=>[m.n,m]));
     const segs=[];let nV=0,nI=0;
     for(const mesh of glb.meshes){const m=want.get(mesh.name);if(!m)continue;for(const p of mesh.primitives){segs.push({m,mesh,p});nV+=p.pos.length/3;nI+=p.idx.length;}}
@@ -220,7 +221,7 @@ async function loadModel(){
   }catch(e){
     console.warn('body model: keeping the mannequin',e);
     info.innerHTML='MODEL · <b>PLACEHOLDER</b><br>Z-ANATOMY · <i>NOT LOADED</i>';
-    toast('3D MODEL NOT LOADED · <i>MANNEQUIN</i> SHOWN');
+    toast(`3D MODEL NOT LOADED · <i>${esc(e.message||e)}</i>`,9000);
   }
 }
 function drivers(){                                         // how far each driver moves its muscles, from the editor's values

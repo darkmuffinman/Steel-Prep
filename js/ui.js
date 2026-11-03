@@ -8,7 +8,7 @@ export const ghostOf=s=>s.replace(/[0-9]/g,'8');                 // "19.4" → "
 export const lcd=(v,size='l')=>`<div class="lcd ${size}"><span class="ghost">${ghostOf(v)}</span><span class="val">${v}</span></div>`;
 export const lcdw=w=>`<span class="lcdw"><span class="ghost">${'~'.repeat(w.length)}</span><span class="val">${w}</span></span>`; // 14-segment word
 export const stampNow=()=>{const d=new Date();let h=d.getHours(),ap=h>=12?'PM':'AM';h=h%12||12;return `${pad(d.getMonth()+1)}.${pad(d.getDate())}.${d.getFullYear()} · ${pad(h)}:${pad(d.getMinutes())} ${ap}`;};
-export function toast(html){const t=$('#toast');t.innerHTML=html;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2400);}
+export function toast(html,ms=2400){const t=$('#toast');t.innerHTML=html;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),ms);}
 /* text typed by the user goes through esc() before it is put into HTML, so a "<" in a food name stays a "<" */
 export const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 

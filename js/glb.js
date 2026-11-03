@@ -10,10 +10,14 @@ const JSON_CHUNK=0x4E4F534A,BIN_CHUNK=0x004E4942;
 const TYPED={5120:Int8Array,5121:Uint8Array,5122:Int16Array,5123:Uint16Array,5125:Uint32Array,5126:Float32Array};
 const SIZE={SCALAR:1,VEC2:2,VEC3:3,VEC4:4,MAT4:16};
 
-export async function loadGLB(url){
+export async function loadGLB(url,onProgress){
   const res=await fetch(url);
   if(!res.ok)throw new Error(`${url}: HTTP ${res.status}`);
-  return parseGLB(await res.arrayBuffer());
+  if(!res.body||!onProgress)return parseGLB(await res.arrayBuffer());
+  const total=+res.headers.get('content-length')||0,reader=res.body.getReader(),chunks=[];let got=0;   // stream it so the HUD can show progress
+  for(;;){const {done,value}=await reader.read();if(done)break;chunks.push(value);got+=value.length;onProgress(got,total);}
+  const buf=new Uint8Array(got);let o=0;for(const c of chunks){buf.set(c,o);o+=c.length;}
+  return parseGLB(buf.buffer);
 }
 
 export function parseGLB(buf){
