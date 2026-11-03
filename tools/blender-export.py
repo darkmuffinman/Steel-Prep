@@ -6,10 +6,19 @@
 #   small text files that tell Claude what came out. Nothing in your Blender file is
 #   saved or changed; the trimming only exists in the exported copy.
 #
+#   Z-Anatomy's "Muscular insertions" carry Subdivision Surface modifiers that make
+#   Blender 5.2 crash while it works through them, often while the file is still being
+#   opened. The script therefore switches those modifiers off, in memory only, and when
+#   it opens the file itself (see below) it does so before Blender first works through
+#   them; the insertion patches come out a little coarser. See DISABLE_SUBSURF below.
+#
 # HOW TO RUN IT (Blender 3.x, 4.x or 5.x)
 #   1. Open the Z-Anatomy file in Blender (File → Open). If what you downloaded is a
 #      model file instead (.glb / .gltf / .fbx / .obj), start a new file and use
-#      File → Import to bring it in.
+#      File → Import to bring it in. If Blender 5.2 crashes while opening the
+#      Z-Anatomy file, start Blender with an empty scene instead, put the path of
+#      Startup.blend in BLEND_FILE below, and carry on: the script then opens the
+#      file itself in a way that sidesteps the crash.
 #   2. Click the "Scripting" tab at the top of Blender.
 #   3. In the text editor in the middle: Text → Open → pick this file → then press
 #      the "Run Script" button (the ▶ at the top of that editor) or Alt+P.
@@ -19,15 +28,70 @@
 #      was never saved): body.glb, body-manifest.json, names.txt, report.txt.
 #   6. Close Blender without saving (choose "Don't Save" if it asks): the script
 #      only changes the copy it exports, and your original should stay untouched.
+#   Without the Blender window, from a terminal, this does the same thing. Note the
+#   "--": the script opens the file itself, which is what sidesteps the crash at open:
+#      blender.exe -b -P blender-export.py -- "<path to Startup.blend>"
+#   (blender.exe -b "<path to Startup.blend>" -P blender-export.py works too, but
+#   about one run in three dies while Blender opens the file; if so, just rerun.)
 #
 # Settings you may change are right below. Everything else is the machinery.
 
 TARGET_TRIANGLES = 150_000     # total triangle budget for the exported muscles
 MIN_TRIANGLES_PER_MUSCLE = 60  # never trim a small muscle below this
 OUTPUT_NAME = "body"           # body.glb / body-manifest.json
+DISABLE_SUBSURF = True         # switch off Subdivision Surface modifiers first (Blender 5.2 crashes on them)
+BLEND_FILE = ""                # path of Startup.blend if the script should open it itself; "" = use the open file
 
 import bpy, os, re, json, time, sys, traceback
 from mathutils import Vector
+
+# ---------- open the file ourselves, when asked to ----------
+# Blender works through every modifier once while it opens a file, before any script
+# gets to run, and on Z-Anatomy that is where the Subdivision Surface crash most often
+# hits. When this script opens the file (path after "--" on the command line, or in
+# BLEND_FILE), a "load_post" handler switches those modifiers off in the moment between
+# reading the file and that first pass, so Blender never evaluates them at all.
+def _disable_subsurf():
+    """Switch every Subdivision Surface modifier off, in memory only; returns how many."""
+    n = 0
+    for o in bpy.data.objects:
+        for m in o.modifiers:
+            if m.type == "SUBSURF" and (m.show_viewport or m.show_render):
+                m.show_viewport = False
+                m.show_render = False
+                n += 1
+    return n
+
+def _blend_file_to_open():
+    argv = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else []
+    for a in argv + ([BLEND_FILE] if BLEND_FILE else []):
+        if a.lower().endswith(".blend"):
+            return os.path.normcase(os.path.abspath(a))
+    if not bpy.data.filepath and any(a.lower().endswith(".blend") for a in sys.argv[1:]):
+        raise RuntimeError('Put "--" before the .blend path so this script can open it safely:  '
+                           'blender.exe -b -P blender-export.py -- "<path to Startup.blend>"')
+    return ""
+
+_subsurf_off_at_load = 0
+_opened_here = _blend_file_to_open()
+if _opened_here and os.path.normcase(os.path.abspath(bpy.data.filepath or "")) != _opened_here:
+    if not os.path.isfile(_opened_here):
+        raise RuntimeError(f"Blender file not found: {_opened_here}")
+
+    @bpy.app.handlers.persistent
+    def _switch_off_subsurf_on_load(*_):
+        global _subsurf_off_at_load
+        if DISABLE_SUBSURF:
+            _subsurf_off_at_load = _disable_subsurf()
+
+    bpy.app.handlers.load_post.append(_switch_off_subsurf_on_load)
+    try:
+        bpy.ops.wm.open_mainfile(filepath=_opened_here)
+    finally:
+        if _switch_off_subsurf_on_load in bpy.app.handlers.load_post:
+            bpy.app.handlers.load_post.remove(_switch_off_subsurf_on_load)
+else:
+    _opened_here = ""
 
 # ---------- where the files go, and a report that is written as we go ----------
 blend_dir = os.path.dirname(bpy.data.filepath) if bpy.data.filepath else ""
@@ -100,6 +164,9 @@ MUSCLE_STEMS = re.compile(
 # ---------- 1. inventory of every mesh in the file ----------
 try:
     log(f"Blender {bpy.app.version_string} · file: {bpy.data.filepath or '(unsaved)'} · output folder: {OUT_DIR}")
+    if _opened_here:
+        log("the file was opened by this script"
+            + (", with its Subdivision Surface modifiers switched off before Blender first worked through it" if DISABLE_SUBSURF else ""))
     parents = collection_parents()
     meshes = [o for o in bpy.data.objects if o.type == "MESH"]
     log(f"{len(meshes)} mesh objects in the file, {len(bpy.data.collections)} collections")
@@ -134,6 +201,15 @@ try:
         f"{total_before:,} triangles before trimming")
 
     # ---------- 3. make them exportable and add the trimming ----------
+    # Blender 5.2.1 corrupts memory while evaluating the Subdivision Surface modifiers on
+    # Z-Anatomy's insertion patches (Solidify + Subsurf stacks on mirrored pairs). Switching
+    # them off, in memory only, is what lets the export run; nothing is saved. When this
+    # script opened the file itself they are already off (see the top of the file).
+    n_subsurf = _subsurf_off_at_load
+    if DISABLE_SUBSURF:
+        n_subsurf += _disable_subsurf()
+        log(f"{n_subsurf} Subdivision Surface modifiers switched off in memory (Blender 5.2 crashes while evaluating them)"
+            + (f", {_subsurf_off_at_load} of them while the file was opening" if _subsurf_off_at_load else ""))
     unhide_everything()
     ratio = min(1.0, TARGET_TRIANGLES / max(1, total_before))
     log(f"trim ratio {ratio:.4f} (target {TARGET_TRIANGLES:,} triangles)")
@@ -189,6 +265,7 @@ try:
         "exported": time.strftime("%Y-%m-%d %H:%M"),
         "license": "Derived from Z-Anatomy (CC BY-SA 4.0), itself derived from BodyParts3D (CC BY-SA 2.1 Japan)",
         "targetTriangles": TARGET_TRIANGLES, "trianglesBefore": total_before, "trianglesAfter": total_after,
+        "subsurfModifiersDisabled": n_subsurf,
         "boundsMin": [round(gmin.x, 4), round(gmin.y, 4), round(gmin.z, 4)],
         "boundsMax": [round(gmax.x, 4), round(gmax.y, 4), round(gmax.z, 4)],
         "upAxisInBlender": "Z", "meshes": records,
