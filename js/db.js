@@ -7,7 +7,7 @@
    If IndexedDB is unavailable (some private windows), a memory-only
    fallback keeps the app usable for the session; nothing is kept then.
    ========================================================= */
-const NAME='steelprep',VERSION=1;
+const NAME='steelprep',VERSION=2;      // 2: workouts (slice W1). Raising VERSION makes the browser call onupgradeneeded, which adds the new stores
 const STORES={
   settings:       {keyPath:'key'},                                        // {key, value}: compDate, targets, caffeineCutoff…
   foods:          {keyPath:'id',indexes:{barcode:'barcode',name:'name'}},
@@ -20,6 +20,8 @@ const STORES={
   weights:        {keyPath:'date'},                                       // filled in slice 4
   scans:          {keyPath:'date'},                                       // filled in slice 4
   photos:         {keyPath:'id',autoIncrement:true},                      // filled in slice 4
+  workoutSplits:  {keyPath:'id'},                                         // the plan per split: 7 days of label / rest / movements
+  workoutSessions:{keyPath:'date'},                                       // what happened on a calendar day: sets, weights, notes, completed
   meta:           {keyPath:'key'},                                        // schemaVersion, migrated, seeded
 };
 let idb=null;                       // the open database, or null in fallback mode
@@ -54,7 +56,8 @@ export const db={
     if(!idb)for(const n in STORES)mem[n]=new Map();
     await migrateLocalStorage();
     for(const row of await this.all('settings'))cache[row.key]=row.value;
-    if(!(await this.get('meta','schemaVersion')))await this.put('meta',{key:'schemaVersion',value:VERSION});
+    const sv=await this.get('meta','schemaVersion');
+    if(!sv||sv.value<VERSION)await this.put('meta',{key:'schemaVersion',value:VERSION});
   },
   get(store,key){return idb?wrap(os(store).get(key)):Promise.resolve(mem[store].get(key));},
   all(store){return idb?wrap(os(store).getAll()):Promise.resolve([...mem[store].values()]);},

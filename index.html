@@ -64,6 +64,34 @@
   </footer>
 </section>
 
+<!-- ============================ WORKOUTS ============================ -->
+<section id="screen-workouts" class="screen">
+  <header class="bar n-head">
+    <button class="back" data-go="menu">◀ MENU</button>
+    <div class="brand"><div class="mark">STEEL<b>PREP</b></div><div class="tab">/ WORKOUTS</div></div>
+    <div class="seg wk-tabs" id="wkTabs"><button class="on" data-tab="split">SPLIT</button><button data-tab="form">FORM TRACKING</button></div>
+    <div class="daynav" id="wkNav">
+      <button class="arrow sm" id="wkPrev" aria-label="previous week">◀</button>
+      <div class="daylcd" id="wkLcd" title="Week shown"></div>
+      <button class="arrow sm" id="wkNext" aria-label="next week">▶</button>
+      <button class="btn sm" id="wkThis" hidden>THIS WEEK</button>
+    </div>
+  </header>
+  <div class="wk-pane" id="wkSplit">
+    <div class="deck-row">
+      <button class="arrow sm" id="deckPrev" aria-label="previous split">◀</button>
+      <div class="deck" id="deck"></div>
+      <button class="arrow sm" id="deckNext" aria-label="next split">▶</button>
+      <div class="deck-hint">THE FRONT CARD IS YOUR ACTIVE SPLIT<br>TAP IT TO FLIP · SWIPE OR USE THE ARROWS FOR THE NEXT ONE<br>THE PLAN BELOW REPEATS EVERY WEEK</div>
+    </div>
+    <div class="week" id="week"></div>
+  </div>
+  <div class="wk-pane uc-pane" id="wkForm" hidden>
+    <div class="uc-sign still"><div>UNDER CONSTRUCTION</div></div>
+    <div class="note">FORM TRACKING · TO BE PLANNED</div>
+  </div>
+</section>
+
 <!-- ============================ BODY ============================ -->
 <section id="screen-body" class="screen">
   <header class="bar">
@@ -187,6 +215,28 @@
     <div class="amount-row"><input class="field num" id="waterCustom" type="number" inputmode="decimal" min="0" step="any" placeholder="CUSTOM OZ"><button class="btn primary" id="waterAdd">ADD</button></div>
   </div>
 </div>
+
+<!-- Workouts: one day of the planner -->
+<div class="sheet" id="daySheet">
+  <div class="sheet-head"><h3 id="dayTitle">DAY</h3><button data-close="daySheet">CLOSE ✕</button></div>
+  <div class="sheet-body day-body">
+    <div class="day-moves">
+      <div class="ngrp"><span>MOVEMENTS</span><em id="dayMode"></em></div>
+      <div id="dayMoves"></div>
+    </div>
+    <div class="day-notes">
+      <div class="ngrp"><span>NOTES</span><em>ONE LINE PER ROW</em></div>
+      <div id="dayNotes"></div>
+      <button class="btn sm" id="dayAddNote">+ ADD NOTE</button>
+    </div>
+  </div>
+  <div class="sheet-actions">
+    <button class="btn danger" id="dayUnmark" hidden>UNMARK COMPLETED</button>
+    <button class="btn" id="dayStart" hidden>START WORKOUT</button>
+    <button class="btn primary" id="dayComplete" hidden>MARK COMPLETED</button>
+  </div>
+</div>
+<div class="ask" id="ask"><div class="ask-box"><div class="ask-q" id="askQ"></div><div class="ask-btns"><button class="btn" id="askNo">NO</button><button class="btn primary" id="askYes">YES</button></div></div></div>
 
 <div class="sheet compact" id="caffeineSheet">
   <div class="sheet-head"><h3>CAFFEINE <span>MAX 200 MG · NONE AFTER 1 PM</span></h3><button data-close="caffeineSheet">CLOSE ✕</button></div>

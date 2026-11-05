@@ -15,6 +15,7 @@ import {wireScreens,toast,esc} from './ui.js';
 import {initMenu} from './menu.js';
 import {initBody} from './body.js';
 import {initNutrients} from './nutrients.js';
+import {initWorkouts} from './workouts.js';
 
 await db.open();                                   // "await": wait for the database before any screen reads it
 wireScreens();
@@ -25,4 +26,5 @@ const start=async(name,fn)=>{try{await fn();}catch(e){console.error(name+' faile
 await start('menu',initMenu);
 await start('body',initBody);
 await start('nutrients',initNutrients);
+await start('workouts',initWorkouts);
 if(!db.available)toast('STORAGE UNAVAILABLE · THIS SESSION WILL NOT BE KEPT');

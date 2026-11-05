@@ -58,7 +58,7 @@ const TABS=[
    ico:'<svg viewBox="0 0 100 100"><circle cx="50" cy="16" r="9"/><path d="M36 30h28l6 26-8 2-3-14v22l5 30h-9l-5-26-5 26h-9l5-30V44l-3 14-8-2z"/></svg>'},
   {id:'goals',name:'GOALS',sub:'PHYSIQUE · DATE',uc:true,
    ico:'<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="38"/><circle cx="50" cy="50" r="24"/><circle cx="50" cy="50" r="10"/><path d="M50 4v14M50 82v14M4 50h14M82 50h14"/></svg>'},
-  {id:'workouts',name:'WORKOUTS',sub:'SPLITS · NOTES · TRACKING',uc:true,
+  {id:'workouts',name:'WORKOUTS',sub:'SPLITS · NOTES · TRACKING',uc:false,
    ico:'<svg viewBox="0 0 100 100"><rect x="8" y="36" width="10" height="28"/><rect x="18" y="28" width="12" height="44"/><rect x="70" y="28" width="12" height="44"/><rect x="82" y="36" width="10" height="28"/><path d="M30 50h40"/></svg>'},
   {id:'progress',name:'PROGRESS',sub:'PHOTOS · CHART',uc:true,
    ico:'<svg viewBox="0 0 100 100"><path d="M10 86h80M10 86V14"/><path d="M18 72l18-18 14 10 30-32"/><path d="M68 32h12v12"/></svg>'},

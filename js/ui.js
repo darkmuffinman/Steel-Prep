@@ -40,6 +40,7 @@ export function openSheet(id){
 export function closeSheets(){
   document.querySelectorAll('.drawer.open,.sheet.open').forEach(d=>d.classList.remove('open'));
   $('#scrim')?.classList.remove('show');
+  $('#ask')?.classList.remove('show');
 }
 export function wireScreens(){
   document.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>go(b.dataset.go)));
