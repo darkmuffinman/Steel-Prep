@@ -1,0 +1,25 @@
+[    0.0s] Blender 5.2.1 LTS · file: c:\users\george\appdata\local\claude-data\claude_pzs8sxrjxfjjc\scratch-workspaces\5b752197-7d66-4109-8437-8adedbe763b1\9b07fcfe-0157-4afc-b3fe-f21fb12e4185\scratch-2026-11-03-78f11f\z-anatomy\startup.blend · output folder: c:\users\george\appdata\local\claude-data\claude_pzs8sxrjxfjjc\scratch-workspaces\5b752197-7d66-4109-8437-8adedbe763b1\9b07fcfe-0157-4afc-b3fe-f21fb12e4185\scratch-2026-11-03-78f11f\z-anatomy
+[    0.0s] the file was opened by this script, with its Subdivision Surface modifiers switched off before Blender first worked through it
+[    0.0s] 4569 mesh objects in the file, 1944 collections
+[    5.8s] names.txt written
+[   10.7s]    1244 meshes under Scene Collection/1: Skeletal system
+[   10.7s]     789 meshes under Scene Collection/4: Muscular system
+[   10.7s]     705 meshes under Scene Collection/2: Muscular insertions
+[   10.7s]     480 meshes under Scene Collection/3: Joints
+[   10.7s]     460 meshes under Scene Collection/7: Nervous system & Sense organs
+[   10.7s]     299 meshes under Scene Collection/9: Regions of human body
+[   10.7s]     254 meshes under Scene Collection/8: Visceral systems
+[   10.7s]     220 meshes under Scene Collection/6: Lymphoid organs
+[   10.7s]      60 meshes under Scene Collection/5: Cardiovascular system
+[   10.7s]      33 meshes under Scene Collection/Bonus collection/Reference lines, planes & movements'
+[   10.7s]      19 meshes under Scene Collection/Reference lines, reference planes, movements
+[   10.7s]       3 meshes under Scene Collection/Cross section planes
+[   10.7s]       2 meshes under Scene Collection
+[   10.7s]       1 meshes under (no collection)
+[   16.1s] 1738 muscle objects: 1494 under a muscle collection, 1544 by name; 2,280,501 triangles before trimming
+[   16.1s] 1249 Subdivision Surface modifiers switched off in memory (Blender 5.2 crashes while evaluating them), 1249 of them while the file was opening
+[   25.3s] trim ratio 0.0658 (target 150,000 triangles)
+[   28.6s] decimate modifiers added (they are applied only in the exported copy)
+[   34.0s] manifest written: 1738 meshes, 261,092 triangles after trimming, height in Blender units 1.713
+[   39.0s] body.glb written: 5.4 MB
+[   39.0s] DONE. Upload body.glb, body-manifest.json, names.txt and report.txt to the repo's assets/ folder.

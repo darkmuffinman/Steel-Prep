@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Steel Prep</title>
+<link rel="stylesheet" href="css/lcd-fonts.css">
+<link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+<div id="orient">LANDSCAPE LAYOUT IS THE TARGET — ROTATE OR OPEN FULL SCREEN</div>
+
+<!-- ============================ MENU ============================ -->
+<section id="screen-menu" class="screen active">
+  <div class="menu-top">
+    <div class="brand"><div class="mark">STEEL<b>PREP</b></div></div>
+    <div class="cd-wrap">
+      <div class="cd" id="cd" title="Tap to set the competition date"></div>
+      <div class="cd-sub" id="cdSub"></div>
+      <input type="date" id="cdDate">
+    </div>
+    <div class="clockside">
+      <div class="datebox"><div class="lbl">TODAY</div><div id="dateLcd"></div></div>
+      <svg class="clock" id="clock" viewBox="0 0 100 100"></svg>
+    </div>
+  </div>
+  <div class="stage" id="stage">
+    <div class="drum" id="drum"></div>
+  </div>
+  <div class="bar menu-bottom">
+    <span class="ver">STEEL PREP · SLICE 2 · NUTRIENTS</span>
+    <button class="arrow" id="prev" aria-label="previous">◀</button>
+    <div class="dots" id="dots"></div>
+    <button class="arrow" id="next" aria-label="next">▶</button>
+    <span class="hint">SWIPE TO SPIN · TAP TO OPEN</span>
+  </div>
+</section>
+
+<!-- ============================ NUTRIENTS ============================ -->
+<section id="screen-nutrients" class="screen">
+  <header class="bar n-head">
+    <button class="back" data-go="menu">◀ MENU</button>
+    <div class="brand"><div class="mark">STEEL<b>PREP</b></div><div class="tab">/ NUTRIENTS</div></div>
+    <div class="daynav">
+      <button class="arrow sm" id="dayPrev" aria-label="previous day">◀</button>
+      <div class="daylcd" id="dayLcd" title="Tap to pick a day"></div>
+      <button class="arrow sm" id="dayNext" aria-label="next day">▶</button>
+      <button class="btn sm" id="dayToday" hidden>TODAY</button>
+      <input type="date" id="dayPick">
+    </div>
+    <div class="daystate" id="dayState"></div>
+  </header>
+  <main id="bars"></main>
+  <aside id="daylog">
+    <div class="log-head"><span>DAY LOG</span><span id="logSum"></span></div>
+    <div class="log-list" id="logList"></div>
+  </aside>
+  <footer class="bar n-foot">
+    <button class="btn primary" id="logFoodBtn">+ LOG FOOD</button>
+    <button class="btn" id="waterBtn">WATER</button>
+    <button class="btn" id="caffeineBtn">CAFFEINE</button>
+    <span class="hint" style="margin-left:auto">TAP A LOG ROW TO EDIT IT</span>
+    <button class="btn" id="targetsBtn">TARGETS</button>
+  </footer>
+</section>
+
+<!-- ============================ WORKOUTS ============================ -->
+<section id="screen-workouts" class="screen">
+  <header class="bar n-head">
+    <button class="back" data-go="menu">◀ MENU</button>
+    <div class="brand"><div class="mark">STEEL<b>PREP</b></div><div class="tab">/ WORKOUTS</div></div>
+    <div class="seg wk-tabs" id="wkTabs"><button class="on" data-tab="split">SPLIT</button><button data-tab="form">FORM TRACKING</button></div>
+    <div class="daynav" id="wkNav">
+      <button class="arrow sm" id="wkPrev" aria-label="previous week">◀</button>
+      <div class="daylcd" id="wkLcd" title="Week shown"></div>
+      <button class="arrow sm" id="wkNext" aria-label="next week">▶</button>
+      <button class="btn sm" id="wkThis" hidden>THIS WEEK</button>
+    </div>
+  </header>
+  <div class="wk-pane" id="wkSplit">
+    <div class="deck-row">
+      <button class="arrow sm" id="deckPrev" aria-label="previous split">◀</button>
+      <div class="deck" id="deck"></div>
+      <button class="arrow sm" id="deckNext" aria-label="next split">▶</button>
+      <div class="deck-hint">THE FRONT CARD IS YOUR ACTIVE SPLIT<br>TAP IT TO FLIP · SWIPE OR USE THE ARROWS FOR THE NEXT ONE<br>THE PLAN BELOW REPEATS EVERY WEEK</div>
+    </div>
+    <div class="week" id="week"></div>
+  </div>
+  <div class="wk-pane uc-pane" id="wkForm" hidden>
+    <div class="uc-sign still"><div>UNDER CONSTRUCTION</div></div>
+    <div class="note">FORM TRACKING · TO BE PLANNED</div>
+  </div>
+</section>
+
+<!-- ============================ BODY ============================ -->
+<section id="screen-body" class="screen">
+  <header class="bar">
+    <button class="back" data-go="menu">◀ MENU</button>
+    <div class="brand"><div class="mark">STEEL<b>PREP</b></div><div class="tab">/ BODY</div></div>
+    <div class="topcenter">
+      <div class="toplcd"><div class="lbl">BMI</div><div class="lcd xl" id="bmi"><span class="ghost">88.8</span><span class="val">26.1</span></div></div>
+      <div class="toplcd"><div class="lbl">BMR<small>KATCH-McARDLE</small></div><div class="lcd xl" id="bmr"><span class="ghost">8888</span><span class="val">1891</span></div><span class="unit">KCAL</span></div>
+    </div>
+    <div class="stamp" id="stamp"></div>
+  </header>
+
+  <aside id="stats">
+    <div class="readout"><div class="lbl">GENDER</div><div class="row"><div class="lcd l l14"><span class="ghost">~</span><span class="val">M</span></div><span class="unit">MALE</span></div></div>
+    <div class="readout"><div class="lbl">HEIGHT</div><div class="row"><div class="lcd l"><span class="ghost">8</span><span class="val">5</span></div><span class="unit">FT</span><div class="lcd l"><span class="ghost">88</span><span class="val">11</span></div><span class="unit">IN</span></div></div>
+    <div class="readout"><div class="lbl">BODY FAT</div><div class="row"><div class="lcd l"><span class="ghost">88.8</span><span class="val">19.4</span></div><span class="unit">%</span></div><div class="sub">INBODY <b>10.09.2026</b></div></div>
+    <div class="readout"><div class="lbl">MUSCLE MASS</div>
+      <div class="row"><div class="lcd m"><span class="ghost">888.8</span><span class="val">&nbsp;87.7</span></div><span class="unit">LB SMM</span></div>
+      <div class="row"><div class="lcd m"><span class="ghost">888.8</span><span class="val">155.2</span></div><span class="unit">LB FFM</span></div>
+    </div>
+    <div class="readout"><div class="lbl">WEIGHT</div><div class="row"><div class="lcd l"><span class="ghost">888.8</span><span class="val">187.0</span></div><span class="unit">LB</span></div><div class="sub">7-DAY AVG <b>188.2</b> · <b>10.26.2026</b></div></div>
+  </aside>
+
+  <main id="viewport">
+    <canvas id="gl"></canvas>
+    <svg class="rings" id="rings" viewBox="0 0 100 100"></svg>
+    <div class="scan"></div>
+    <div class="corner tl"></div><div class="corner tr"></div><div class="corner bl"></div><div class="corner br"></div>
+    <div class="hudtxt tl" id="hudSrc"></div>
+    <div class="hudtxt tr" id="modelInfo">MODEL · <b>LOADING</b><br>Z-ANATOMY · <i>CC BY-SA 4.0</i></div>
+    <div class="hudtxt bl">ROT <b id="rot">000°</b><br>SPIN <b id="spinlbl">ON</b></div>
+    <div class="hudtxt br">POSE · <b id="poselbl">A-POSE</b><br>LOOK · <b id="looklbl">HOLO</b></div>
+  </main>
+
+  <aside id="editor">
+    <div class="ed-head">
+      <div class="ed-title">PROPORTION <span>INCHES</span></div>
+      <div class="segs">
+        <div class="seg" id="setSeg"><button class="on" data-set="relaxed">RELAXED</button><button data-set="flexed">FLEXED</button></div>
+        <div class="seg" id="modeSeg"><button class="on" data-mode="tape">TAPE</button><button data-mode="muscle">MUSCLE</button></div>
+      </div>
+    </div>
+    <div class="ed-list" id="list"></div>
+  </aside>
+
+  <footer class="bar">
+    <div class="ctl"><span class="lbl">POSE</span><div class="seg" id="poseSeg"><button class="on" data-pose="A">A-POSE</button><button data-pose="T">T-POSE</button></div></div>
+    <div class="ctl"><span class="lbl">LOOK</span><div class="seg" id="lookSeg"><button class="on" data-look="holo">HOLO</button><button data-look="solid">SOLID</button></div></div>
+    <div class="ctl"><span class="lbl">SPIN</span><div class="seg" id="spinSeg"><button class="on" data-spin="1">ON</button><button data-spin="0">OFF</button></div></div>
+    <span class="hint" style="margin-left:auto">DRAG MODEL TO ROTATE</span>
+    <button class="btn" id="photosBtn">PHOTOS</button>
+    <button class="btn" id="histBtn">HISTORY</button>
+    <button class="btn primary" id="saveBtn">SAVE MEASUREMENTS</button>
+  </footer>
+</section>
+
+<div class="drawer" id="histDrawer">
+  <h3>MEASUREMENT HISTORY <button data-close="histDrawer">CLOSE ✕</button></h3>
+  <div id="hist"></div>
+  <div class="note">EVERY SAVE IS KEPT AS A DATED VERSION. TAP ONE TO VIEW IT ON THE MODEL (BUILD STEP).</div>
+</div>
+<div class="drawer" id="photoDrawer">
+  <h3>PROGRESS PHOTOS · TODAY <button data-close="photoDrawer">CLOSE ✕</button></h3>
+  <div class="slots">
+    <label class="slot"><span class="pose">FRONT</span><span class="plus">+</span><input type="file" accept="image/*" capture="environment"></label>
+    <label class="slot"><span class="pose">SIDE</span><span class="plus">+</span><input type="file" accept="image/*" capture="environment"></label>
+    <label class="slot"><span class="pose">BACK</span><span class="plus">+</span><input type="file" accept="image/*" capture="environment"></label>
+  </div>
+  <div class="note">EACH PHOTO IS STAMPED WITH POSE + DATE + TIME. THIS PREVIEW SHOWS THE PICKED IMAGE BUT DOES NOT STORE IT.</div>
+</div>
+<!-- ============================ NUTRIENTS SHEETS — panels that slide over the screen ============================ -->
+<div id="scrim"></div>
+<div class="sheet" id="catalogSheet">
+  <div class="sheet-head"><h3>FOOD CATALOG <span id="catalogCount"></span></h3><button data-close="catalogSheet">CLOSE ✕</button></div>
+  <div class="sheet-tools">
+    <input class="field" id="foodSearch" type="search" placeholder="SEARCH BY NAME OR BRAND" autocomplete="off">
+    <input class="field num" id="barcodeBox" inputmode="numeric" placeholder="BARCODE #" autocomplete="off">
+    <button class="btn" id="barcodeGo">FIND</button>
+    <button class="btn" id="newFoodBtn">+ NEW FOOD</button>
+  </div>
+  <div class="sheet-body" id="foodList"></div>
+</div>
+
+<div class="sheet compact" id="amountSheet">
+  <div class="sheet-head"><h3 id="amountTitle">LOG</h3><button data-close="amountSheet">CLOSE ✕</button></div>
+  <div class="sheet-body">
+    <div class="amount-row">
+      <input class="field num big" id="amountIn" type="number" inputmode="decimal" min="0" step="any">
+      <div class="seg" id="unitSeg"></div>
+    </div>
+    <div class="preview" id="amountPreview"></div>
+  </div>
+  <div class="sheet-actions">
+    <button class="btn danger" id="amountDelete" hidden>DELETE</button>
+    <button class="btn primary" id="amountSave">ADD TO LOG</button>
+  </div>
+</div>
+
+<div class="sheet" id="foodSheet">
+  <div class="sheet-head"><h3 id="foodTitle">NEW FOOD</h3><button data-close="foodSheet">CLOSE ✕</button></div>
+  <div class="sheet-body" id="foodForm"></div>
+  <div class="sheet-actions">
+    <button class="btn danger" id="fDelete" hidden>DELETE FOOD</button>
+    <button class="btn primary" id="fSave">SAVE FOOD</button>
+  </div>
+</div>
+
+<div class="sheet" id="targetsSheet">
+  <div class="sheet-head"><h3>TARGETS <span>TOO HIGH TURNS RED AT ONCE · TOO LITTLE ONLY AFTER THE DAY ENDS · BLANK = NO LINE</span></h3><button data-close="targetsSheet">CLOSE ✕</button></div>
+  <div class="sheet-body" id="targetsList"></div>
+  <div class="sheet-actions">
+    <button class="btn" id="targetsReset" style="margin-right:auto">RESET TO DEFAULTS</button>
+    <button class="btn primary" id="targetsSave">SAVE TARGETS</button>
+  </div>
+</div>
+
+<div class="sheet compact" id="waterSheet">
+  <div class="sheet-head"><h3>WATER <span>FLUID OUNCES</span></h3><button data-close="waterSheet">CLOSE ✕</button></div>
+  <div class="sheet-body">
+    <div class="quick" id="waterQuick"><button class="btn" data-oz="8">8 OZ</button><button class="btn" data-oz="16">16 OZ</button><button class="btn" data-oz="32">32 OZ</button></div>
+    <div class="amount-row"><input class="field num" id="waterCustom" type="number" inputmode="decimal" min="0" step="any" placeholder="CUSTOM OZ"><button class="btn primary" id="waterAdd">ADD</button></div>
+  </div>
+</div>
+
+<!-- Workouts: one day of the planner -->
+<div class="sheet" id="daySheet">
+  <div class="sheet-head"><h3 id="dayTitle">DAY</h3><button data-close="daySheet">CLOSE ✕</button></div>
+  <div class="sheet-body day-body">
+    <div class="day-moves">
+      <div class="ngrp"><span>MOVEMENTS</span><em id="dayMode"></em></div>
+      <div id="dayMoves"></div>
+    </div>
+    <div class="day-notes">
+      <div class="ngrp"><span>NOTES</span><em>ONE LINE PER ROW</em></div>
+      <div id="dayNotes"></div>
+      <button class="btn sm" id="dayAddNote">+ ADD NOTE</button>
+    </div>
+  </div>
+  <div class="sheet-actions">
+    <button class="btn danger" id="dayUnmark" hidden>UNMARK COMPLETED</button>
+    <button class="btn" id="dayStart" hidden>START WORKOUT</button>
+    <button class="btn primary" id="dayComplete" hidden>MARK COMPLETED</button>
+  </div>
+</div>
+<div class="ask" id="ask"><div class="ask-box"><div class="ask-q" id="askQ"></div><div class="ask-btns"><button class="btn" id="askNo">NO</button><button class="btn primary" id="askYes">YES</button></div></div></div>
+
+<div class="sheet compact" id="caffeineSheet">
+  <div class="sheet-head"><h3>CAFFEINE <span>MAX 200 MG · NONE AFTER 1 PM</span></h3><button data-close="caffeineSheet">CLOSE ✕</button></div>
+  <div class="sheet-body">
+    <div class="quick" id="caffeineQuick"></div>
+    <button class="btn sm" id="sourcesEdit">EDIT SOURCES</button>
+    <div id="sourcesList" hidden></div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script type="module" src="js/app.js"></script>
+</body>
+</html>
